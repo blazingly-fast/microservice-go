@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"context"
-	"github.com/blazingly-fast/microservice-go/data"
-	"github.com/gorilla/mux"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/blazingly-fast/microservice-go/data"
+	"github.com/gorilla/mux"
 )
 
 type Products struct {
@@ -66,6 +68,15 @@ func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 			http.Error(w, "Unable to unmarshal json", http.StatusBadRequest)
 			return
 		}
+
+		// validate the product
+		err = prod.Validate()
+		if err != nil {
+			p.l.Println("[ERROR] validating product", err)
+			http.Error(w, fmt.Sprintf("Error validating product: %s", err), http.StatusBadRequest)
+			return
+		}
+
 		ctx := context.WithValue(r.Context(), KeyProduct{}, prod)
 		r = r.WithContext(ctx)
 
