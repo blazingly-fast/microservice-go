@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/blazingly-fast/microservice-go/sdk/models"
 )
 
 // NewUpdateProductParams creates a new UpdateProductParams object,
@@ -66,7 +68,7 @@ type UpdateProductParams struct {
 	     Product data structure to Update or Create.
 	Note: the id field is ignored by update and create operations
 	*/
-	Body interface{}
+	Body *models.Product
 
 	timeout    time.Duration
 	Context    context.Context
@@ -122,13 +124,13 @@ func (o *UpdateProductParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the update product params
-func (o *UpdateProductParams) WithBody(body interface{}) *UpdateProductParams {
+func (o *UpdateProductParams) WithBody(body *models.Product) *UpdateProductParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the update product params
-func (o *UpdateProductParams) SetBody(body interface{}) {
+func (o *UpdateProductParams) SetBody(body *models.Product) {
 	o.Body = body
 }
 

@@ -7,9 +7,12 @@ package products
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/blazingly-fast/microservice-go/sdk/models"
 )
 
 // DeleteProductReader is a Reader for the DeleteProduct structure.
@@ -105,6 +108,7 @@ DeleteProductNotFound describes a response with status code 404, with default he
 Generic error message returned as a string
 */
 type DeleteProductNotFound struct {
+	Payload *models.GenericError
 }
 
 // IsSuccess returns true when this delete product not found response has a 2xx status code
@@ -133,14 +137,25 @@ func (o *DeleteProductNotFound) IsCode(code int) bool {
 }
 
 func (o *DeleteProductNotFound) Error() string {
-	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotFound ", 404)
+	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotFound  %+v", 404, o.Payload)
 }
 
 func (o *DeleteProductNotFound) String() string {
-	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotFound ", 404)
+	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotFound  %+v", 404, o.Payload)
+}
+
+func (o *DeleteProductNotFound) GetPayload() *models.GenericError {
+	return o.Payload
 }
 
 func (o *DeleteProductNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GenericError)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -156,6 +171,7 @@ DeleteProductNotImplemented describes a response with status code 501, with defa
 Generic error message returned as a string
 */
 type DeleteProductNotImplemented struct {
+	Payload *models.GenericError
 }
 
 // IsSuccess returns true when this delete product not implemented response has a 2xx status code
@@ -184,14 +200,25 @@ func (o *DeleteProductNotImplemented) IsCode(code int) bool {
 }
 
 func (o *DeleteProductNotImplemented) Error() string {
-	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotImplemented ", 501)
+	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotImplemented  %+v", 501, o.Payload)
 }
 
 func (o *DeleteProductNotImplemented) String() string {
-	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotImplemented ", 501)
+	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotImplemented  %+v", 501, o.Payload)
+}
+
+func (o *DeleteProductNotImplemented) GetPayload() *models.GenericError {
+	return o.Payload
 }
 
 func (o *DeleteProductNotImplemented) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GenericError)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

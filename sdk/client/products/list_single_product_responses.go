@@ -7,9 +7,12 @@ package products
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/blazingly-fast/microservice-go/sdk/models"
 )
 
 // ListSingleProductReader is a Reader for the ListSingleProduct structure.
@@ -48,6 +51,7 @@ ListSingleProductOK describes a response with status code 200, with default head
 Data structure representing a single product
 */
 type ListSingleProductOK struct {
+	Payload *models.Product
 }
 
 // IsSuccess returns true when this list single product o k response has a 2xx status code
@@ -76,14 +80,25 @@ func (o *ListSingleProductOK) IsCode(code int) bool {
 }
 
 func (o *ListSingleProductOK) Error() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] listSingleProductOK ", 200)
+	return fmt.Sprintf("[GET /products/{id}][%d] listSingleProductOK  %+v", 200, o.Payload)
 }
 
 func (o *ListSingleProductOK) String() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] listSingleProductOK ", 200)
+	return fmt.Sprintf("[GET /products/{id}][%d] listSingleProductOK  %+v", 200, o.Payload)
+}
+
+func (o *ListSingleProductOK) GetPayload() *models.Product {
+	return o.Payload
 }
 
 func (o *ListSingleProductOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Product)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -99,6 +114,7 @@ ListSingleProductNotFound describes a response with status code 404, with defaul
 Generic error message returned as a string
 */
 type ListSingleProductNotFound struct {
+	Payload *models.GenericError
 }
 
 // IsSuccess returns true when this list single product not found response has a 2xx status code
@@ -127,14 +143,25 @@ func (o *ListSingleProductNotFound) IsCode(code int) bool {
 }
 
 func (o *ListSingleProductNotFound) Error() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] listSingleProductNotFound ", 404)
+	return fmt.Sprintf("[GET /products/{id}][%d] listSingleProductNotFound  %+v", 404, o.Payload)
 }
 
 func (o *ListSingleProductNotFound) String() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] listSingleProductNotFound ", 404)
+	return fmt.Sprintf("[GET /products/{id}][%d] listSingleProductNotFound  %+v", 404, o.Payload)
+}
+
+func (o *ListSingleProductNotFound) GetPayload() *models.GenericError {
+	return o.Payload
 }
 
 func (o *ListSingleProductNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GenericError)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

@@ -2,15 +2,16 @@
 //
 // Documentation for Product API
 //
-//	Schemes: http
-//	BasePath: /
-//	Version: 1.0.0
+//		Schemes: http
+//		BasePath: /
+//	 Contact: tehnoslavija@gmail.com
+//		Version: 1.0.0
 //
-//	Consumes:
-//	- application/json
+//		Consumes:
+//		- application/json
 //
-//	Produces:
-//	- application/json
+//		Produces:
+//		- application/json
 //
 // swagger:meta
 package handlers
