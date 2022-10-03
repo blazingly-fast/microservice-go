@@ -15,7 +15,7 @@ import (
 //  422: errorValidation
 
 // Update handles PUT requests to update products
-func (p *Products) Update(rw http.ResponseWriter, r *http.Request) {
+func (p *Products) Update(w http.ResponseWriter, r *http.Request) {
 
 	// fetch the product from the context
 	prod := r.Context().Value(KeyProduct{}).(data.Product)
@@ -25,11 +25,11 @@ func (p *Products) Update(rw http.ResponseWriter, r *http.Request) {
 	if err == data.ErrProductNotFound {
 		p.l.Println("[ERROR] product not found", err)
 
-		rw.WriteHeader(http.StatusNotFound)
-		data.ToJSON(&GenericError{Message: "Product not found in database"}, rw)
+		w.WriteHeader(http.StatusNotFound)
+		data.ToJSON(&GenericError{Message: "Product not found in database"}, w)
 		return
 	}
 
 	// write the no content success header
-	rw.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }

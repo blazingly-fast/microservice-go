@@ -2,16 +2,15 @@ package main
 
 import (
 	"context"
+	"github.com/blazingly-fast/microservice-go/data"
+	"github.com/blazingly-fast/microservice-go/handlers"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/blazingly-fast/microservice-go/data"
-	"github.com/blazingly-fast/microservice-go/handlers"
-	"github.com/go-openapi/runtime/middleware"
-	"github.com/gorilla/mux"
 )
 
 // var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
