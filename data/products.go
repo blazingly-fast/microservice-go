@@ -79,21 +79,14 @@ func UpdateProduct(p Product) error {
 
 // AddProduct adds a new product to the database
 func AddProduct(p Product) {
-	// get the next id in sequence
-	maxID := productList[len(productList)-1].ID
-	p.ID = maxID + 1
-	productList = append(productList, &p)
+	sql := fmt.Sprintf("insert into products(name, description, price, sku) values('%s','%s','%f','%s')", p.Name, p.Description, p.Price, p.SKU)
+	Connect(sql)
 }
 
 // DeleteProduct deletes a product from the database
 func DeleteProduct(id int) error {
-	i := findIndexByProductID(id)
-	if i == -1 {
-		return ErrProductNotFound
-	}
-
-	productList = append(productList[:i], productList[i+1])
-
+	sql := fmt.Sprintf("delete from products where id=%d", id)
+	Connect(sql)
 	return nil
 }
 

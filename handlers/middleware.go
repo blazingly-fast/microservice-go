@@ -22,15 +22,15 @@ func (p *Products) MiddlewareValidateProduct(next http.Handler) http.Handler {
 		}
 
 		// validate the product
-		errs := p.v.Validate(prod)
-		if len(errs) != 0 {
-			p.l.Println("[ERROR] validating product", errs)
+		// errs := p.v.Validate(prod)
+		// if len(errs) != 0 {
+		// 	p.l.Println("[ERROR] validating product", errs)
 
-			// return the validation messages as an array
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			data.ToJSON(&ValidationError{Messages: errs.Errors()}, w)
-			return
-		}
+		// 	// return the validation messages as an array
+		// 	w.WriteHeader(http.StatusUnprocessableEntity)
+		// 	data.ToJSON(&ValidationError{Messages: errs.Errors()}, w)
+		// 	return
+		// }
 
 		// add the product to the context
 		ctx := context.WithValue(r.Context(), KeyProduct{}, prod)
