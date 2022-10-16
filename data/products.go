@@ -1,7 +1,11 @@
 package data
 
 import (
+	"context"
 	"fmt"
+	"log"
+
+	"github.com/jackc/pgx/v4"
 )
 
 // ErrProductNotFound is an error raised when a product can not be found in the database
@@ -41,24 +45,51 @@ type Product struct {
 	SKU string `json:"sku" validate:"sku"`
 }
 
+type ProductDB struct {
+	conn *pgx.Conn
+}
+
+func NewProductDB(conn *pgx.Conn) *ProductDB {
+	return &ProductDB{conn}
+}
+
 // Products defines a slice of Product
 type Products []*Product
 
 // GetProducts returns all products from the database
-func GetProducts() Products {
-	return productList
+func (db *ProductDB) GetProducts() []*Product {
+	var products_list []*Product
+	rows, err := db.conn.Query(context.Background(), "select * from products")
+	if err != nil {
+		log.Fatalf("failed to get products: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		product := Product{}
+		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.SKU)
+		if err != nil {
+			log.Fatalf("failed to list products: %v", err)
+		}
+		products_list = append(products_list, &product)
+	}
+	return products_list
 }
 
 // GetProductByID returns a single product which matches the id from the
 // database.
 // If a product is not found this function returns a ProductNotFound error
-func GetProductByID(id int) (*Product, error) {
-	i := findIndexByProductID(id)
-	if id == -1 {
-		return nil, ErrProductNotFound
+func (db *ProductDB) GetProductByID(id int) (*Product, error) {
+	sql := fmt.Sprintf("select * from products where id=%d", id)
+	rows, err := db.conn.Query(context.Background(), sql)
+	if err != nil {
+		log.Fatalf("failed to get product: %v", err)
 	}
-
-	return productList[i], nil
+	product := Product{}
+	for rows.Next() {
+		rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.SKU)
+	}
+	return &product, nil
 }
 
 // UpdateProduct replaces a product in the database with the given
@@ -78,15 +109,31 @@ func UpdateProduct(p Product) error {
 }
 
 // AddProduct adds a new product to the database
-func AddProduct(p Product) {
+func (db *ProductDB) AddProduct(p Product) {
 	sql := fmt.Sprintf("insert into products(name, description, price, sku) values('%s','%s','%f','%s')", p.Name, p.Description, p.Price, p.SKU)
-	Connect(sql)
+	tx, err := db.conn.Begin(context.Background())
+	if err != nil {
+		log.Fatalf("conn.Begin failed: %v", err)
+	}
+	_, err = tx.Exec(context.Background(), sql)
+	if err != nil {
+		log.Fatal("tx.Exec failed: %v", err)
+	}
+	tx.Commit(context.Background())
 }
 
 // DeleteProduct deletes a product from the database
-func DeleteProduct(id int) error {
+func (db *ProductDB) DeleteProduct(id int) error {
 	sql := fmt.Sprintf("delete from products where id=%d", id)
-	Connect(sql)
+	tx, err := db.conn.Begin(context.Background())
+	if err != nil {
+		log.Fatalf("conn.Begin failed: %v", err)
+	}
+	_, err = tx.Exec(context.Background(), sql)
+	if err != nil {
+		log.Fatal("tx.Exec failed: %v", err)
+	}
+	tx.Commit(context.Background())
 	return nil
 }
 

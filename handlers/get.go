@@ -17,7 +17,7 @@ func (p *Products) ListAll(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "application/json")
 
-	prods := data.GetProducts()
+	prods := p.db.GetProducts()
 
 	err := data.ToJSON(prods, w)
 	if err != nil {
@@ -38,7 +38,7 @@ func (p *Products) ListSingle(w http.ResponseWriter, r *http.Request) {
 
 	p.l.Println("[DEBUG] get record id", id)
 
-	prod, err := data.GetProductByID(id)
+	prod, err := p.db.GetProductByID(id)
 
 	switch err {
 	case nil:

@@ -2,16 +2,18 @@ package main
 
 import (
 	"context"
-	"github.com/blazingly-fast/microservice-go/data"
-	"github.com/blazingly-fast/microservice-go/handlers"
-	"github.com/go-openapi/runtime/middleware"
-	"github.com/gorilla/mux"
-	"github.com/nicholasjackson/env"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/blazingly-fast/microservice-go/data"
+	"github.com/blazingly-fast/microservice-go/handlers"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v4"
+	"github.com/nicholasjackson/env"
 )
 
 var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
@@ -23,8 +25,16 @@ func main() {
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 	v := data.NewValidation()
 
+	// create connection
+	db, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatalf("Unable to establish connection: %v", err)
+	}
+	defer db.Close(context.Background())
+	p := data.NewProductDB(db)
+
 	// create the handlers
-	ph := handlers.NewProducts(l, v)
+	ph := handlers.NewProducts(l, v, p)
 
 	// create a new serve mux and register the handlers
 	sm := mux.NewRouter()
