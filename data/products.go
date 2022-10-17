@@ -96,15 +96,18 @@ func (db *ProductDB) GetProductByID(id int) (*Product, error) {
 // item.
 // If a product with the given id does not exist in the database
 // this function returns a ProductNotFound error
-func UpdateProduct(p Product) error {
-	i := findIndexByProductID(p.ID)
-	if i == -1 {
-		return ErrProductNotFound
+func (db *ProductDB) UpdateProduct(p Product) error {
+	sql := fmt.Sprintf(
+		"update products set name='%s', description='%s', price='%f', sku='%s' where id=%d", p.Name, p.Description, p.Price, p.SKU, p.ID)
+	tx, err := db.conn.Begin(context.Background())
+	if err != nil {
+		log.Fatalf("conn.Begin failed: %v", err)
 	}
-
-	// update the product in the DB
-	productList[i] = &p
-
+	_, err = tx.Exec(context.Background(), sql)
+	if err != nil {
+		log.Fatal("tx.Exec failed: %v", err)
+	}
+	tx.Commit(context.Background())
 	return nil
 }
 
@@ -135,33 +138,4 @@ func (db *ProductDB) DeleteProduct(id int) error {
 	}
 	tx.Commit(context.Background())
 	return nil
-}
-
-// findIndex finds the index of a product in the database
-// returns -1 when no product can be found
-func findIndexByProductID(id int) int {
-	for i, p := range productList {
-		if p.ID == id {
-			return i
-		}
-	}
-
-	return -1
-}
-
-var productList = []*Product{
-	&Product{
-		ID:          1,
-		Name:        "Latte",
-		Description: "Frothy milky coffee",
-		Price:       2.45,
-		SKU:         "abc323",
-	},
-	&Product{
-		ID:          2,
-		Name:        "Esspresso",
-		Description: "Short and strong coffee without milk",
-		Price:       1.99,
-		SKU:         "fjd34",
-	},
 }
