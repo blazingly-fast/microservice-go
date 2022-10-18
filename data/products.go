@@ -96,7 +96,7 @@ func (db *ProductDB) GetProductByID(id int) (*Product, error) {
 // item.
 // If a product with the given id does not exist in the database
 // this function returns a ProductNotFound error
-func (db *ProductDB) UpdateProduct(p Product) error {
+func (db *ProductDB) UpdateProduct(p *Product) error {
 	sql := fmt.Sprintf(
 		"update products set name='%s', description='%s', price='%f', sku='%s' where id=%d", p.Name, p.Description, p.Price, p.SKU, p.ID)
 	tx, err := db.conn.Begin(context.Background())
@@ -112,7 +112,7 @@ func (db *ProductDB) UpdateProduct(p Product) error {
 }
 
 // AddProduct adds a new product to the database
-func (db *ProductDB) AddProduct(p Product) {
+func (db ProductDB) AddProduct(p *Product) {
 	sql := fmt.Sprintf("insert into products(name, description, price, sku) values('%s','%s','%f','%s')", p.Name, p.Description, p.Price, p.SKU)
 	tx, err := db.conn.Begin(context.Background())
 	if err != nil {

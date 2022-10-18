@@ -23,7 +23,7 @@ func (p *Products) Update(w http.ResponseWriter, r *http.Request) {
 	prod := r.Context().Value(KeyProduct{}).(*data.Product)
 	prod.ID = id
 	p.l.Println("[DEBUG] updating record id", prod.ID)
-	err := p.db.UpdateProduct(*prod)
+	err := p.db.UpdateProduct(prod)
 	if err == data.ErrProductNotFound {
 		p.l.Println("[ERROR] product not found", err)
 

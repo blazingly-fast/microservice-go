@@ -12,7 +12,6 @@ import (
 	"github.com/blazingly-fast/microservice-go/handlers"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
 	"github.com/nicholasjackson/env"
 )
 
@@ -26,10 +25,7 @@ func main() {
 	v := data.NewValidation()
 
 	// create connection
-	db, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatalf("Unable to establish connection: %v", err)
-	}
+	db := data.Connection()
 	defer db.Close(context.Background())
 	p := data.NewProductDB(db)
 

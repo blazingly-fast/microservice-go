@@ -65,21 +65,37 @@ func NewValidation() *Validation {
 //				fmt.Println(ve.Param())
 //				fmt.Println()
 //		}
-func (v *Validation) Validate(i interface{}) ValidationErrors {
-	errs := v.validate.Struct(i).(validator.ValidationErrors)
+// func (v *Validation) Validate(i interface{}) ValidationErrors {
+// 	errs := v.validate.Struct(i).(validator.ValidationErrors)
+// 	if len(errs) == 0 {
+// 		return nil
+// 	}
 
-	if len(errs) == 0 {
+// 	var returnErrs []ValidationError
+// 	for _, err := range errs {
+// 		// cast the FieldError into our ValidationError and append to the slice
+// 		ve := ValidationError{err.(validator.FieldError)}
+// 		returnErrs = append(returnErrs, ve)
+// 	}
+
+//		return returnErrs
+//	}
+func (v *Validation) Validate(i interface{}) ValidationErrors {
+	errs := v.validate.Struct(i)
+
+	if errs == nil {
 		return nil
 	}
 
 	var returnErrs []ValidationError
-	for _, err := range errs {
+	for _, err := range errs.(validator.ValidationErrors) {
 		// cast the FieldError into our ValidationError and append to the slice
 		ve := ValidationError{err.(validator.FieldError)}
 		returnErrs = append(returnErrs, ve)
 	}
 
 	return returnErrs
+
 }
 
 // validateSKU
